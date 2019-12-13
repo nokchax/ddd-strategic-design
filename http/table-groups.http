@@ -1,14 +1,20 @@
-###
+##########################################
+## 테이블 그룹에 주문테이블을 생성한다.
+##
+## - 다음과 같은 사항에서 에러가 발생한다.
+## -- orderTables 의 개수가 1 이하인 경우
+## -- orderTables 에서 특정 orderTable 의 empty 가 true 인 경우
+##########################################
 POST {{host}}/api/table-groups
 Content-Type: application/json
 
 {
   "orderTables": [
     {
-      "id": 1
+      "id": 4
     },
     {
-      "id": 2
+      "id": 5
     }
   ]
 }

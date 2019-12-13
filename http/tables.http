@@ -1,11 +1,11 @@
 ##########################################
-## 주문테이블을 전체를 조회한다.
+## orderTables, 주문테이블을 전체를 조회한다.
 ##########################################
 GET {{host}}/api/tables
 
 
 ##########################################
-## 특정 주문테이블의 empty 를 `true` 로 변경
+## orderTables. 특정 주문테이블의 empty 를 `true` 로 변경
 ##########################################
 PUT {{host}}/api/tables/1/empty
 Content-Type: application/json
@@ -15,9 +15,9 @@ Content-Type: application/json
 }
 
 ##########################################
-## 특정 주문테이블의 empty 를 `false` 로 변경
+## orderTables. 특정 주문테이블의 empty 를 `false` 로 변경
 ##########################################
-PUT {{host}}/api/tables/1/empty
+PUT {{host}}/api/tables/4/empty
 Content-Type: application/json
 
 {
@@ -25,13 +25,14 @@ Content-Type: application/json
 }
 
 ##########################################
-## 특정 주문테이블의 게스트 수를 `N` 으로 변경한다.
+## orderTables, 특정 주문테이블의 게스트 수를 `N` 으로 변경한다.
+## orderTables 의 empty 값이 true 가 되어야 수행시킬 수 있다.
 ##########################################
-PUT {{host}}/api/tables/1/number-of-guests
+PUT {{host}}/api/tables/4/number-of-guests
 Content-Type: application/json
 
 {
-  "numberOfGuests": 4
+  "numberOfGuests": 2
 }
 
 ###

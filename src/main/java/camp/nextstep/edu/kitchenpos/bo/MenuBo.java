@@ -55,6 +55,7 @@ public class MenuBo {
             sum = sum.add(product.getPrice().multiply(BigDecimal.valueOf(menuProduct.getQuantity())));
         }
 
+        /** product 의 가격의 합보다, 메뉴로 만든 가격이 더 저렴해야 한다. **/
         if (price.compareTo(sum) > 0) {
             throw new IllegalArgumentException();
         }
