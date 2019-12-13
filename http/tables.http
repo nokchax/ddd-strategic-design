@@ -1,13 +1,13 @@
 ##########################################
 ## 주문테이블을 전체를 조회한다.
 ##########################################
-GET localhost:8080/api/tables
+GET {{host}}/api/tables
 
 
 ##########################################
 ## 특정 주문테이블의 empty 를 `true` 로 변경
 ##########################################
-PUT localhost:8080/api/tables/1/empty
+PUT {{host}}/api/tables/1/empty
 Content-Type: application/json
 
 {
@@ -17,7 +17,7 @@ Content-Type: application/json
 ##########################################
 ## 특정 주문테이블의 empty 를 `false` 로 변경
 ##########################################
-PUT localhost:8080/api/tables/1/empty
+PUT {{host}}/api/tables/1/empty
 Content-Type: application/json
 
 {
