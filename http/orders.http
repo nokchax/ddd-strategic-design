@@ -1,9 +1,14 @@
-###
+##########################################
+## order 를 생성한다.
+## - orderTable 의 empty 값이 false 여야 생성된다.
+## - orderTable 은 어느 orderTable 인지 명시.
+## - orderLineItems 는
+##########################################
 POST {{host}}/api/orders
 Content-Type: application/json
 
 {
-  "orderTableId": 1,
+  "orderTableId": 2,
   "orderLineItems": [
     {
       "menuId": 1,
@@ -12,7 +17,9 @@ Content-Type: application/json
   ]
 }
 
-###
+##########################################
+## order 목록을 조회한다.
+##########################################
 GET {{host}}/api/orders
 
 ###
