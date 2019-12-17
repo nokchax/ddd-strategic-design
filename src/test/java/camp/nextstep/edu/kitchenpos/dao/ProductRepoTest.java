@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("상품 레파지토리 테스트")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ProductDao.class, H2Config.class})
-@ActiveProfiles("test")
+@ActiveProfiles("repo-test")
 public class ProductRepoTest {
 
     @Autowired

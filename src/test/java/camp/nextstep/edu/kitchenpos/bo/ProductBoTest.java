@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ProductBo.class, ProductDao.class})
-@ActiveProfiles("test")
+@ActiveProfiles("repo-test")
 public class ProductBoTest {
 
     @Autowired
@@ -60,6 +60,8 @@ public class ProductBoTest {
     @CsvSource({"통닭김치찌개"})
     @DisplayName("상품의 가격은 null 이기 때문에 에러가 발생한다.")
     public void _createIfPriceNotNullElseThrowTest(String name) {
+
+        /** @CsvSource 로 null 값 보내는게 안된다. **/
 
         // given : price null
         Product product = generateProduct(name, null);

@@ -11,7 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @DisplayName("메뉴상품 레파지토리 테스트")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {MenuDao.class, MenuProductDao.class, H2Config.class})
-@ActiveProfiles("test")
+@ActiveProfiles("repo-test")
 public class MenuProductRepoTest {
 
     @Autowired

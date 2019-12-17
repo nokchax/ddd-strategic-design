@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("메뉴그룹 레파지토리 테스트")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {MenuGroupDao.class, H2Config.class})
-@ActiveProfiles("test")
+@ActiveProfiles("repo-test")
 public class MenuGroupRepoTest {
 
     @Autowired

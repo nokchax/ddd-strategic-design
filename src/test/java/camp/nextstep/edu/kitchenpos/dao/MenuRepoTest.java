@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         MenuGroupDao.class,
         H2Config.class
 })
-@ActiveProfiles("test")
+@ActiveProfiles("repo-test")
 public class MenuRepoTest {
 
     @Autowired private MenuDao menuDao;

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("주문테이블 레파지토리 테스트")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {OrderTableDao.class, H2Config.class})
-@ActiveProfiles("test")
+@ActiveProfiles("repo-test")
 public class OrderTableRepoTest {
 
     @Autowired
