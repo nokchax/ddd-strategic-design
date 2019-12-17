@@ -2,16 +2,21 @@ package camp.nextstep.edu.kitchenpos.bo;
 
 import camp.nextstep.edu.kitchenpos.dao.ProductDao;
 import camp.nextstep.edu.kitchenpos.model.Product;
-import camp.nextstep.edu.kitchenpos.setup.ProductGenerator;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.DefaultArgumentConverter;
+import org.junit.jupiter.params.converter.SimpleArgumentConverter;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -28,13 +33,14 @@ public class ProductBoTest {
     @MockBean
     private ProductDao productDao;
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({"통닭김치찌개, 50000"})
     @DisplayName("상품을 생성한다.")
-    public void _createTest() {
+    public void _createTest(String name, Integer price) {
 
         // given
-        Product product = ProductGenerator.generate();
-        Product savedProduct = ProductGenerator.generate((long)1, product);
+        Product product = generateProduct(name, price);
+        Product savedProduct = generateProduct(1L, name, price);
 
         Mockito.when(productDao.save(product))
                 .thenReturn(savedProduct);
@@ -50,13 +56,14 @@ public class ProductBoTest {
         );
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({"통닭김치찌개"})
     @DisplayName("상품의 가격은 null 이기 때문에 에러가 발생한다.")
-    public void _createIfPriceNotNullElseThrowTest() {
+    public void _createIfPriceNotNullElseThrowTest(String name) {
 
         // given : price null
-        Product product = ProductGenerator.generatePriceNull();
-        Product savedProduct = ProductGenerator.generate((long)1, product);
+        Product product = generateProduct(name, null);
+        Product savedProduct = generateProduct(1L, name, null);
 
         Mockito.when(productDao.save(product))
                 .thenReturn(savedProduct);
@@ -67,13 +74,14 @@ public class ProductBoTest {
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({"통닭김치찌개, -10000"})
     @DisplayName("상품의 가격은 음수이기 때문에 에러가 발생한다.")
-    public void _createIfPriceNegativeElseThrowTest() {
+    public void _createIfPriceNegativeElseThrowTest(String name, Integer price) {
 
         // given : price negative
-        Product product = ProductGenerator.generatePriceNegative();
-        Product savedProduct = ProductGenerator.generate((long)1, product);
+        Product product = generateProduct(name, price);
+        Product savedProduct = generateProduct(1L, name, price);
 
         Mockito.when(productDao.save(product))
                 .thenReturn(savedProduct);
@@ -82,5 +90,35 @@ public class ProductBoTest {
         assertThatThrownBy(() -> {
             productBo.create(product);
         }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private Product generateProduct(final String name, final Integer price) {
+
+        final Product product = new Product();
+
+        product.setName(name);
+        product.setPrice((price == null) ? null : new BigDecimal(price));
+
+        return product;
+    }
+
+    private Product generateProduct(final Long id, final String name, final Integer price) {
+
+        final Product product = new Product();
+        product.setId(id);
+        product.setName(name);
+        product.setPrice((price == null) ? null : new BigDecimal(price));
+
+        return product;
+    }
+
+    public class NullableConverter extends SimpleArgumentConverter {
+        @Override
+        protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
+            if ("null".equals(source)) {
+                return null;
+            }
+            return DefaultArgumentConverter.INSTANCE.convert(source, targetType);
+        }
     }
 }

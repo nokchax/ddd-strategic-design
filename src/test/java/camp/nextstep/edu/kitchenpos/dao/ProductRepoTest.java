@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@DisplayName("상품 레파지토리 테스트")
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ProductDao.class, H2Config.class})
 @ActiveProfiles("test")
@@ -28,7 +29,7 @@ public class ProductRepoTest {
     private ProductDao productDao;
 
     @Test
-    @DisplayName("상품 데이터베이스에 등록한다.")
+    @DisplayName("상품을 데이터베이스에 등록한다.")
     public void _saveTest() {
 
         // given
