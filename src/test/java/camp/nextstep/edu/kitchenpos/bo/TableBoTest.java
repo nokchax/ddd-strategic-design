@@ -36,8 +36,6 @@ class TableBoTest {
     private OrderDao orderDao;
     @MockBean
     private OrderTableDao orderTableDao;
-    @MockBean
-    private TableGroupDao tableGroupDao;
 
 
     TableBoTest(TableBo tableBo) {
@@ -151,6 +149,66 @@ class TableBoTest {
         assertThat(result.isEmpty()).isEqualTo(isEmpty);
     }
 
+    @Test
+    @DisplayName("손님의 수를 음수로 설정하려하면 Exception을 던진다")
+    void throwExceptionWhenLessThanZero(){
+        //given
+        final OrderTable invalidTable = constructOrderTable(-1);
+
+        ///then
+        assertThrows(IllegalArgumentException.class,
+                //when
+                () -> tableBo.changeNumberOfGuests(1L, invalidTable));
+    }
+
+    @Test
+    @DisplayName("주어진 테이블 id의 테이블이 존재하지 않으면 Exception을 던진다")
+    void throwExceptionWhenTableIdNotExist(){
+        //given
+        final OrderTable orderTable = constructOrderTable(2);
+        when(orderTableDao.findById(anyLong()))
+                .thenReturn(Optional.empty());
+
+        ///then
+        assertThrows(IllegalArgumentException.class,
+                //when
+                () -> tableBo.changeNumberOfGuests(1L, orderTable));
+    }
+
+    @Test
+    @DisplayName("주어진 테이블 id의 테이블 Empty상태이면 Exception을 던진다")
+    void throwExceptionWhenTableIsEmpty(){
+        //given
+        final OrderTable savedTable = constructOrderTable(0);
+        final OrderTable parameterTable = constructOrderTable(4);
+        when(orderTableDao.findById(anyLong()))
+                .thenReturn(Optional.of(savedTable));
+
+        ///then
+        assertThrows(IllegalArgumentException.class,
+                //when
+                () -> tableBo.changeNumberOfGuests(1L, parameterTable));
+    }
+
+    @Test
+    @DisplayName("주어진 테이블id의 테이블을 찾아서 주어진 테이블의 손님 수로 변경한다.")
+    void changeNumberOfGuests(){
+        //given
+        final OrderTable savedTable = constructOrderTable(2);
+        final OrderTable parameterTable = constructOrderTable(4);
+        when(orderTableDao.findById(anyLong()))
+                .thenReturn(Optional.of(savedTable));
+        when(orderTableDao.save(any(OrderTable.class)))
+                .thenAnswer(returnsFirstArg());
+
+        //when
+        final OrderTable result = tableBo.changeNumberOfGuests(1L, parameterTable);
+
+        //then
+        assertThat(result).isNotNull();
+        assertThat(parameterTable.getNumberOfGuests())
+                .isEqualTo(result.getNumberOfGuests());
+    }
 
     private OrderTable constructOrderTable(int numberOfGuests) {
         OrderTable orderTable = new OrderTable();
