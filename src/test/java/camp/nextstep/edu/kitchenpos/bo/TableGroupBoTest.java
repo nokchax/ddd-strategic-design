@@ -16,9 +16,14 @@ import org.springframework.test.context.TestConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
@@ -107,5 +112,101 @@ class TableGroupBoTest {
         assertThrows(IllegalArgumentException.class,
                 //when
                 () -> tableGroupBo.create(parameterTableGroup));
+    }
+
+    @DisplayName("테이블 그룹을 받아서 데이터베이스내에 저장한다.")
+    @Test
+    void createTableGroup() {
+        //given
+        final List<OrderTable> orderTables = Lists.list(
+                OrderTableConstructor.constructOrderTable(2),
+                OrderTableConstructor.constructOrderTable(4)
+        );
+        final TableGroup parameterTableGroup = new TableGroup();
+        parameterTableGroup.setOrderTables(orderTables);
+
+        when(orderTableDao.findAllByIdIn(anyList()))
+                .thenReturn(orderTables);
+        when(orderTableDao.save(any(OrderTable.class)))
+                .thenAnswer(returnsFirstArg());
+        when(tableGroupDao.save(any(TableGroup.class)))
+                .thenAnswer(invocation -> {
+                    TableGroup tableGroup = invocation.getArgument(0);
+                    tableGroup.setId(1L);
+                    return tableGroup;
+                });
+
+        //when
+        final TableGroup result = tableGroupBo.create(parameterTableGroup);
+
+        //then
+        final List<OrderTable> resultOrderTables = result.getOrderTables();
+        assertThat(result).isNotNull();
+        assertThat(resultOrderTables).hasSize(orderTables.size());
+        assertThat(resultOrderTables)
+                .allMatch(orderTable ->
+                        Objects.nonNull(orderTable.getTableGroupId()));
+    }
+
+
+    @Test
+    @DisplayName("테이블 그룹 삭제요청시 요청한 테이블 그룹이 존재하지 않으면 Exception이 발생한다")
+    void throwExceptionWhenTableGroupNotExist() {
+        //given
+        when(orderTableDao.findAllByTableGroupId(anyLong()))
+                .thenReturn(Lists.emptyList());
+
+        //then
+        assertThrows(IllegalArgumentException.class,
+                //when
+                () -> tableGroupBo.delete(1L));
+    }
+
+    @Test
+    @DisplayName("테이블 그룹 삭제요청시 요청한 테이블이 MEAL or COOKING 상태이면 Exception이 발생한다")
+    void throwExceptionWhenTableStatusInvalid() {
+        //given
+        final List<OrderTable> orderTables = Lists.list(
+                OrderTableConstructor.constructOrderTable(4),
+                OrderTableConstructor.constructOrderTable(4)
+        );
+        when(orderTableDao.findAllByTableGroupId(anyLong()))
+                .thenReturn(orderTables);
+        when(orderDao.existsByOrderTableIdAndOrderStatusIn(any(), anyList()))
+                .thenReturn(TRUE);
+
+        //then
+        assertThrows(IllegalArgumentException.class,
+                //when
+                () -> tableGroupBo.delete(1L));
+    }
+
+    @ParameterizedTest
+    @DisplayName("테이블 그룹 삭제요청시 요청한 테이블의 TableGroup id가 NULL로 변경된다")
+    @ValueSource(ints = {2, 5})
+    void deleteTableGroup(int numberOfTablesInTableGroup) {
+        //given
+        List<OrderTable> orderTables = new ArrayList<>();
+        final long tableGroupId = 1L;
+        for (int i = 0; i < numberOfTablesInTableGroup; i++) {
+            final OrderTable orderTable = OrderTableConstructor.constructOrderTable(i + 2);
+            orderTable.setTableGroupId(tableGroupId);
+            orderTable.setId((long) i);
+            orderTables.add(orderTable);
+        }
+
+        when(orderTableDao.findAllByTableGroupId(anyLong()))
+                .thenReturn(orderTables);
+        when(orderDao.existsByOrderTableIdAndOrderStatusIn(any(), anyList()))
+                .thenReturn(FALSE);
+        when(orderTableDao.save(any(OrderTable.class)))
+                .thenAnswer(returnsFirstArg());
+
+        //when
+        tableGroupBo.delete(tableGroupId);
+
+        //then
+        assertThat(orderTables).allMatch(orderTable ->
+                Objects.isNull(orderTable.getTableGroupId()));
     }
 }
