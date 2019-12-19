@@ -2,6 +2,7 @@ package camp.nextstep.edu.kitchenpos.bo;
 
 import camp.nextstep.edu.kitchenpos.dao.ProductDao;
 import camp.nextstep.edu.kitchenpos.model.Product;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -77,8 +78,8 @@ class ProductBoTest {
         //given
         final Product chicken = buildProduct("치킨", BigDecimal.valueOf(10000));
         final Product pizza = buildProduct("피자", BigDecimal.valueOf(20000));
-        final List<Product> productList = Stream.of(chicken, pizza)
-                .collect(toList());
+        final List<Product> productList = Lists.list(chicken, pizza);
+
         when(productDao.findAll())
                 .thenReturn(productList);
 

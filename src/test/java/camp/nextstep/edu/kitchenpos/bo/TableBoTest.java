@@ -2,8 +2,8 @@ package camp.nextstep.edu.kitchenpos.bo;
 
 import camp.nextstep.edu.kitchenpos.dao.OrderDao;
 import camp.nextstep.edu.kitchenpos.dao.OrderTableDao;
-import camp.nextstep.edu.kitchenpos.dao.TableGroupDao;
 import camp.nextstep.edu.kitchenpos.model.OrderTable;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
@@ -47,7 +46,7 @@ class TableBoTest {
     @ValueSource(ints = {0, 5})
     void createTable(int guests) {
         //given
-        final OrderTable orderTable = constructOrderTable(guests);
+        final OrderTable orderTable = OrderTableConstructor.constructOrderTable(guests);
         when(orderTableDao.save(orderTable))
                 .thenReturn(orderTable);
 
@@ -62,10 +61,9 @@ class TableBoTest {
     @Test
     void getListOfTable() {
         //given
-        final OrderTable table1 = constructOrderTable(0);
-        final OrderTable table2 = constructOrderTable(4);
-        final List<OrderTable> orderTableList = Stream.of(table1, table2)
-                .collect(toList());
+        final OrderTable table1 = OrderTableConstructor.constructOrderTable(0);
+        final OrderTable table2 = OrderTableConstructor.constructOrderTable(4);
+        final List<OrderTable> orderTableList = Lists.list(table1, table2);
         when(orderTableDao.findAll())
                 .thenReturn(orderTableList);
 
@@ -89,14 +87,14 @@ class TableBoTest {
         //then
         assertThrows(IllegalArgumentException.class,
                 //when
-                () -> tableBo.changeEmpty(1L, constructOrderTable(0)));
+                () -> tableBo.changeEmpty(1L, OrderTableConstructor.constructOrderTable(0)));
     }
 
     @DisplayName("테이블 그룹 id가 존재하는 테이블의 id를 받으면 Exception이 발생한다")
     @Test
     void throwExceptionWhenHavingTableGroupId() {
         //given
-        final OrderTable orderTable = constructOrderTable(0);
+        final OrderTable orderTable = OrderTableConstructor.constructOrderTable(0);
         orderTable.setTableGroupId(1L);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
@@ -112,7 +110,7 @@ class TableBoTest {
     @Test
     void throwExceptionWhileTableIsCookingOrMeal() {
         //given
-        final OrderTable orderTable = constructOrderTable(0);
+        final OrderTable orderTable = OrderTableConstructor.constructOrderTable(0);
 
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(orderTable));
@@ -131,8 +129,8 @@ class TableBoTest {
     @MethodSource("provideGuestsAndEmpty")
     void changeEmptyState(int guests, boolean isEmpty) {
         //given
-        final OrderTable parameterOrderTable = constructOrderTable(guests);
-        final OrderTable savedOrderTable = constructOrderTable(guests);
+        final OrderTable parameterOrderTable = OrderTableConstructor.constructOrderTable(guests);
+        final OrderTable savedOrderTable = OrderTableConstructor.constructOrderTable(guests);
         savedOrderTable.setEmpty(!isEmpty);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(savedOrderTable));
@@ -151,9 +149,9 @@ class TableBoTest {
 
     @Test
     @DisplayName("손님의 수를 음수로 설정하려하면 Exception을 던진다")
-    void throwExceptionWhenLessThanZero(){
+    void throwExceptionWhenLessThanZero() {
         //given
-        final OrderTable invalidTable = constructOrderTable(-1);
+        final OrderTable invalidTable = OrderTableConstructor.constructOrderTable(-1);
 
         ///then
         assertThrows(IllegalArgumentException.class,
@@ -163,9 +161,9 @@ class TableBoTest {
 
     @Test
     @DisplayName("주어진 테이블 id의 테이블이 존재하지 않으면 Exception을 던진다")
-    void throwExceptionWhenTableIdNotExist(){
+    void throwExceptionWhenTableIdNotExist() {
         //given
-        final OrderTable orderTable = constructOrderTable(2);
+        final OrderTable orderTable = OrderTableConstructor.constructOrderTable(2);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
@@ -177,10 +175,10 @@ class TableBoTest {
 
     @Test
     @DisplayName("주어진 테이블 id의 테이블 Empty상태이면 Exception을 던진다")
-    void throwExceptionWhenTableIsEmpty(){
+    void throwExceptionWhenTableIsEmpty() {
         //given
-        final OrderTable savedTable = constructOrderTable(0);
-        final OrderTable parameterTable = constructOrderTable(4);
+        final OrderTable savedTable = OrderTableConstructor.constructOrderTable(0);
+        final OrderTable parameterTable = OrderTableConstructor.constructOrderTable(4);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(savedTable));
 
@@ -192,10 +190,10 @@ class TableBoTest {
 
     @Test
     @DisplayName("주어진 테이블id의 테이블을 찾아서 주어진 테이블의 손님 수로 변경한다.")
-    void changeNumberOfGuests(){
+    void changeNumberOfGuests() {
         //given
-        final OrderTable savedTable = constructOrderTable(2);
-        final OrderTable parameterTable = constructOrderTable(4);
+        final OrderTable savedTable = OrderTableConstructor.constructOrderTable(2);
+        final OrderTable parameterTable = OrderTableConstructor.constructOrderTable(4);
         when(orderTableDao.findById(anyLong()))
                 .thenReturn(Optional.of(savedTable));
         when(orderTableDao.save(any(OrderTable.class)))
@@ -210,14 +208,6 @@ class TableBoTest {
                 .isEqualTo(result.getNumberOfGuests());
     }
 
-    private OrderTable constructOrderTable(int numberOfGuests) {
-        OrderTable orderTable = new OrderTable();
-        orderTable.setNumberOfGuests(numberOfGuests);
-        if (numberOfGuests == 0) {
-            orderTable.setEmpty(true);
-        }
-        return orderTable;
-    }
 
     private static Stream<Arguments> provideGuestsAndEmpty() {
         return Stream.of(
