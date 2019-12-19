@@ -1,10 +1,8 @@
 package camp.nextstep.edu.kitchenpos.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -23,9 +21,6 @@ public class H2Config {
 
     private static final String REPO_TEST = "repo-test";
     private static final String NOT_REPO_TEST = "not-repo-test";
-
-    @Autowired
-    private Environment environment;
 
     @Bean
     @Profile("repo-test")

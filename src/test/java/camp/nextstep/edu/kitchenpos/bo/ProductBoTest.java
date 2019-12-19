@@ -1,19 +1,17 @@
 package camp.nextstep.edu.kitchenpos.bo;
 
+import camp.nextstep.edu.kitchenpos.util.NullableConverter;
 import camp.nextstep.edu.kitchenpos.dao.ProductDao;
 import camp.nextstep.edu.kitchenpos.model.Product;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ArgumentConversionException;
-import org.junit.jupiter.params.converter.DefaultArgumentConverter;
-import org.junit.jupiter.params.converter.SimpleArgumentConverter;
+import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -24,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ProductBo.class, ProductDao.class})
-@ActiveProfiles("repo-test")
 public class ProductBoTest {
 
     @Autowired
@@ -57,9 +54,9 @@ public class ProductBoTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"통닭김치찌개"})
+    @CsvSource({"통닭김치찌개, null"})
     @DisplayName("상품의 가격은 null 이기 때문에 에러가 발생한다.")
-    public void _createIfPriceNotNullElseThrowTest(String name) {
+    public void _createIfPriceNotNullElseThrowTest(String name, @ConvertWith(NullableConverter.class) Integer price) {
 
         /** @CsvSource 로 null 값 보내는게 안된다. **/
 
@@ -112,15 +109,5 @@ public class ProductBoTest {
         product.setPrice((price == null) ? null : new BigDecimal(price));
 
         return product;
-    }
-
-    public class NullableConverter extends SimpleArgumentConverter {
-        @Override
-        protected Object convert(Object source, Class<?> targetType) throws ArgumentConversionException {
-            if ("null".equals(source)) {
-                return null;
-            }
-            return DefaultArgumentConverter.INSTANCE.convert(source, targetType);
-        }
     }
 }
