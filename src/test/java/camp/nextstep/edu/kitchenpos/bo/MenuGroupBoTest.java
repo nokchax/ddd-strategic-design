@@ -2,14 +2,16 @@ package camp.nextstep.edu.kitchenpos.bo;
 
 import camp.nextstep.edu.kitchenpos.dao.MenuGroupDao;
 import camp.nextstep.edu.kitchenpos.model.MenuGroup;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestConstructor;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +50,21 @@ class MenuGroupBoTest {
         assertThat(result.getId())
                 .isNotNull()
                 .isPositive();
+    }
+
+    @Test
+    @DisplayName("메뉴 그룹의 목록을 받아볼 수 있다")
+    void listMenuGroups(){
+        //given
+        final List<MenuGroup> menuGroups = Lists.list(new MenuGroup(), new MenuGroup());
+        when(menuGroupDao.findAll())
+                .thenReturn(menuGroups);
+
+        //when
+        final List<MenuGroup> resultList = menuGroupBo.list();
+
+        //then
+        assertThat(resultList).isEqualTo(menuGroups);
     }
 
 
