@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ProductBo.class, ProductDao.class})
+@DisplayName("상품 BO 를 테스트한다.")
 public class ProductBoTest {
 
     @Autowired

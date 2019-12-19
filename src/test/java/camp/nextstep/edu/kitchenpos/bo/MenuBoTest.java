@@ -1,6 +1,5 @@
 package camp.nextstep.edu.kitchenpos.bo;
 
-import camp.nextstep.edu.kitchenpos.util.NullableConverter;
 import camp.nextstep.edu.kitchenpos.dao.MenuDao;
 import camp.nextstep.edu.kitchenpos.dao.MenuGroupDao;
 import camp.nextstep.edu.kitchenpos.dao.MenuProductDao;
@@ -11,6 +10,7 @@ import camp.nextstep.edu.kitchenpos.model.Product;
 import camp.nextstep.edu.kitchenpos.setup.MenuProductSetup;
 import camp.nextstep.edu.kitchenpos.setup.MenuSetup;
 import camp.nextstep.edu.kitchenpos.setup.ProductSetup;
+import camp.nextstep.edu.kitchenpos.util.NullableConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -40,7 +39,7 @@ import static org.mockito.BDDMockito.given;
         MenuProductDao.class,
         ProductDao.class
 })
-@ActiveProfiles("no-repo-test")
+@DisplayName("메뉴 BO 를 테스트한다.")
 public class MenuBoTest {
 
     @Autowired
@@ -149,13 +148,18 @@ public class MenuBoTest {
 
         given(productDao.findById(product1.getId()))
                 .willReturn(Optional.of(product1));
+
         given(productDao.findById(product2.getId()))
                 .willReturn(Optional.of(product2));
+
         given(menuGroupDao.existsById(menu.getMenuGroupId()))
                 .willReturn(true);
 
-        // 수행하기.
-        given(menuDao.save(menu)).willReturn(null);
+        given(menuDao.save(menu))
+                .willReturn(menu);
 
+
+        /** Dao 의존성이 너무 많이 걸려있다... **/
+        /** MockBean 이 너무 많아짐... **/
     }
 }
