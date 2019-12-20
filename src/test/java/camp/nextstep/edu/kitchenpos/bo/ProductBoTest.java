@@ -59,8 +59,6 @@ public class ProductBoTest {
     @DisplayName("상품의 가격은 null 이기 때문에 에러가 발생한다.")
     public void _createIfPriceNotNullElseThrowTest(String name, @ConvertWith(NullableConverter.class) Integer price) {
 
-        /** @CsvSource 로 null 값 보내는게 안된다. **/
-
         // given : price null
         Product product = generateProduct(name, null);
         Product savedProduct = generateProduct(1L, name, null);

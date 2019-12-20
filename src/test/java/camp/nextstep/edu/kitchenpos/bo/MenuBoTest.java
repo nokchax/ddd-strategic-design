@@ -158,8 +158,8 @@ public class MenuBoTest {
         given(menuDao.save(menu))
                 .willReturn(menu);
 
-
         /** Dao 의존성이 너무 많이 걸려있다... **/
         /** MockBean 이 너무 많아짐... **/
+        /** 이게 맞는 것일까... **/
     }
 }
