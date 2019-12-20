@@ -31,7 +31,7 @@ public class ProductBoTests {
     private ProductBo productBo;
 
     @DisplayName("생성, 성공")
-    @ParameterizedTest(name = "{displayName} - {arguments}")
+    @ParameterizedTest
     @CsvSource(value = {"A상품,100", "B상품,200"})
     public void testCreate(String name, BigDecimal price) {
 
@@ -41,7 +41,7 @@ public class ProductBoTests {
     }
 
     @DisplayName("생성, 가격이 0보다 작거나 null인 경우")
-    @ParameterizedTest(name = "{displayName} - {arguments}")
+    @ParameterizedTest
     @NullSource
     @CsvSource(value = {"-1"})
     public void testCreateWithWrongPrice(BigDecimal price) {
@@ -52,7 +52,7 @@ public class ProductBoTests {
     }
 
     @DisplayName("생성, 이름이 null 인경우")
-    @ParameterizedTest(name = "{displayName} - {arguments}")
+    @ParameterizedTest
     @NullSource
     public void testCreateWithNullName(String name) {
 

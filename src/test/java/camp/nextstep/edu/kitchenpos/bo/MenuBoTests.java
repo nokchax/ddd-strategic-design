@@ -82,9 +82,6 @@ public class MenuBoTests {
 
         final long invalidProductId = 1L;
 
-        final MenuProduct menuProduct = createDefaultMenuProduct();
-        menuProduct.setProductId(invalidProductId);
-
         final Menu menu = createDefaultMenu();
 
         Mockito.when(menuGroupDao.existsById(menu.getMenuGroupId())).thenReturn(true);
@@ -175,7 +172,6 @@ public class MenuBoTests {
 
         Mockito.when(menuDao.findAll()).thenReturn(menus);
 
-
         assertThat(menuBo.list())
                 .hasSize(menus.size())
                 .contains(menuA, menuB);
@@ -184,17 +180,14 @@ public class MenuBoTests {
 
     private Menu createDefaultMenu() {
         final Menu menu = new Menu();
-        menu.setPrice(BigDecimal.valueOf(100));
-        menu.setMenuProducts(Collections.singletonList(createDefaultMenuProduct()));
-        menu.setMenuGroupId(1L);
-        return menu;
-    }
 
-    private MenuProduct createDefaultMenuProduct() {
         final MenuProduct menuProduct = new MenuProduct();
         menuProduct.setQuantity(1L);
         menuProduct.setProductId(1L);
 
-        return menuProduct;
+        menu.setPrice(BigDecimal.valueOf(100));
+        menu.setMenuProducts(Collections.singletonList(menuProduct));
+        menu.setMenuGroupId(1L);
+        return menu;
     }
 }

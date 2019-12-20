@@ -141,11 +141,13 @@ public class OrderBoTests {
     @Test
     public void testCreateSuccess() {
 
+        //given
         final long tableId = 1L;
         final long tableGroupId = 1L;
 
         final Order order = createDefaultOrder();
-        order.setOrderLineItems(Collections.singletonList(new OrderLineItem()));
+        final OrderLineItem orderLineItem = new OrderLineItem();
+        order.setOrderLineItems(Collections.singletonList(orderLineItem));
         order.setOrderTableId(tableId);
 
         final long savedOrderId = 1L;
@@ -163,10 +165,13 @@ public class OrderBoTests {
         Mockito.when(orderTableDao.findById(tableId)).thenReturn(Optional.of(mockOrderTable));
         Mockito.when(tableGroupDao.findById(tableGroupId)).thenReturn(Optional.of(mockTableGroup));
         Mockito.when(orderTableDao.findAllByTableGroupId(tableGroupId)).thenReturn(Collections.singletonList(mockOrderTable));
+        Mockito.when(orderLineItemDao.save(orderLineItem)).thenReturn(orderLineItem);
         Mockito.when(orderDao.save(order)).thenReturn(savedOrder);
 
+        //when
         final Order resultOrder = orderBo.create(order);
 
+        //then
         assertThat(resultOrder.getOrderStatus()).isEqualTo(OrderStatus.COOKING.name());
         assertThat(resultOrder.getOrderTableId()).isEqualTo(tableId);
         assertThat(resultOrder.getOrderLineItems().get(0).getOrderId()).isEqualTo(savedOrderId);
@@ -188,6 +193,8 @@ public class OrderBoTests {
     @DisplayName("모든 주문 조회 성공, 주문상품포함")
     @Test
     public void testListWithOrderProduct() {
+
+        //given
         final long orderId = 1L;
 
         final Order order = createDefaultOrder();
@@ -199,8 +206,10 @@ public class OrderBoTests {
         Mockito.when(orderDao.findAll()).thenReturn(Collections.singletonList(order));
         Mockito.when(orderLineItemDao.findAllByOrderId(orderId)).thenReturn(Collections.singletonList(orderLineItem));
 
+        //when
         final List<Order> result = orderBo.list();
 
+        //then
         assertThat(result)
                 .hasSize(1)
                 .contains(order);
@@ -212,7 +221,7 @@ public class OrderBoTests {
 
     @DisplayName("주문상태 변경, 유효하지않은 주문ID")
     @Test
-    public void testChangeOrderStatusWithInvalidOrderId(){
+    public void testChangeOrderStatusWithInvalidOrderId() {
         final long invalidOrderId = 1L;
 
         Mockito.when(orderDao.findById(invalidOrderId)).thenReturn(Optional.empty());
@@ -223,7 +232,7 @@ public class OrderBoTests {
 
     @DisplayName("주문상태 변경, 이미 식사완료된 주문")
     @Test
-    public void testChangeOrderStatusWithSavedOrderStatusIsCompletion(){
+    public void testChangeOrderStatusWithSavedOrderStatusIsCompletion() {
         final long orderId = 1L;
 
         final Order savedOrder = createDefaultOrder();
@@ -238,7 +247,9 @@ public class OrderBoTests {
 
     @DisplayName("주문상태 변경 성공")
     @Test
-    public void testChangeOrderSuccess(){
+    public void testChangeOrderSuccess() {
+
+        //given
         final long orderId = 1L;
 
         final Order savedOrder = createDefaultOrder();
@@ -251,7 +262,10 @@ public class OrderBoTests {
 
         Mockito.when(orderDao.findById(orderId)).thenReturn(Optional.of(savedOrder));
 
+        //when
         final Order actual = orderBo.changeOrderStatus(orderId, changedOrder);
+
+        //then
         assertThat(actual.getOrderStatus()).isEqualTo(changedOrderStatus);
     }
 

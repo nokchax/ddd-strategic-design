@@ -5,7 +5,6 @@ import camp.nextstep.edu.kitchenpos.dao.OrderTableDao;
 import camp.nextstep.edu.kitchenpos.dao.TableGroupDao;
 import camp.nextstep.edu.kitchenpos.model.OrderTable;
 import camp.nextstep.edu.kitchenpos.model.TableGroup;
-import org.aspectj.weaver.ast.Or;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,20 +52,15 @@ public class TableGroupBoTests {
         //given
         final TableGroup insertTableGroup = createDefaultTableGroup();
 
-        final long insertOrderTableAId = 1L;
-        final OrderTable insertOrderTableA = Mockito.mock(OrderTable.class);
-        Mockito.when(insertOrderTableA.getId()).thenReturn(insertOrderTableAId);
-
-        final long insertOrderTableBId = 2L;
-        final OrderTable insertOrderTableB = Mockito.mock(OrderTable.class);
-        Mockito.when(insertOrderTableB.getId()).thenReturn(insertOrderTableBId);
+        final OrderTable insertOrderTableA = getMockOrderTable(1L);
+        final OrderTable insertOrderTableB = getMockOrderTable(2L);
 
         insertTableGroup.setOrderTables(Arrays.asList(insertOrderTableA, insertOrderTableB));
 
         final OrderTable savedOrderTable = Mockito.mock(OrderTable.class);
         Mockito.when(savedOrderTable.isEmpty()).thenReturn(true);
 
-        Mockito.when(orderTableDao.findAllByIdIn(Arrays.asList(insertOrderTableAId, insertOrderTableBId))).thenReturn(Collections.singletonList(savedOrderTable));
+        Mockito.when(orderTableDao.findAllByIdIn(Arrays.asList(insertOrderTableA.getId(), insertOrderTableB.getId()))).thenReturn(Collections.singletonList(savedOrderTable));
 
         //then
         assertThrows(IllegalArgumentException.class, () -> tableGroupBo.create(insertTableGroup));
@@ -80,13 +74,8 @@ public class TableGroupBoTests {
         //given
         final TableGroup insertTableGroup = createDefaultTableGroup();
 
-        final long insertOrderTableAId = 1L;
-        final OrderTable insertOrderTableA = Mockito.mock(OrderTable.class);
-        Mockito.when(insertOrderTableA.getId()).thenReturn(insertOrderTableAId);
-
-        final long insertOrderTableBId = 2L;
-        final OrderTable insertOrderTableB = Mockito.mock(OrderTable.class);
-        Mockito.when(insertOrderTableB.getId()).thenReturn(insertOrderTableBId);
+        final OrderTable insertOrderTableA = getMockOrderTable(1L);
+        final OrderTable insertOrderTableB = getMockOrderTable(2L);
 
         insertTableGroup.setOrderTables(Arrays.asList(insertOrderTableA, insertOrderTableB));
 
@@ -94,7 +83,8 @@ public class TableGroupBoTests {
         Mockito.when(savedOrderTable.isEmpty()).thenReturn(false);
         Mockito.when(savedOrderTable.getTableGroupId()).thenReturn(3L);
 
-        Mockito.when(orderTableDao.findAllByIdIn(Arrays.asList(insertOrderTableAId, insertOrderTableBId))).thenReturn(Collections.singletonList(savedOrderTable));
+        Mockito.when(orderTableDao.findAllByIdIn(Arrays.asList(insertOrderTableA.getId(), insertOrderTableB.getId())))
+                .thenReturn(Collections.singletonList(savedOrderTable));
 
         //then
         assertThrows(IllegalArgumentException.class, () -> tableGroupBo.create(insertTableGroup));
@@ -107,13 +97,8 @@ public class TableGroupBoTests {
         //given
         final TableGroup insertTableGroup = createDefaultTableGroup();
 
-        final long insertOrderTableAId = 1L;
-        final OrderTable insertOrderTableA = Mockito.mock(OrderTable.class);
-        Mockito.when(insertOrderTableA.getId()).thenReturn(insertOrderTableAId);
-
-        final long insertOrderTableBId = 2L;
-        final OrderTable insertOrderTableB = Mockito.mock(OrderTable.class);
-        Mockito.when(insertOrderTableB.getId()).thenReturn(insertOrderTableBId);
+        final OrderTable insertOrderTableA = getMockOrderTable(1L);
+        final OrderTable insertOrderTableB = getMockOrderTable(2L);
 
         insertTableGroup.setOrderTables(Arrays.asList(insertOrderTableA, insertOrderTableB));
 
@@ -121,7 +106,8 @@ public class TableGroupBoTests {
         Mockito.when(savedOrderTable.isEmpty()).thenReturn(false);
         Mockito.when(savedOrderTable.getTableGroupId()).thenReturn(null);
 
-        Mockito.when(orderTableDao.findAllByIdIn(Arrays.asList(insertOrderTableAId, insertOrderTableBId))).thenReturn(Collections.singletonList(savedOrderTable));
+        Mockito.when(orderTableDao.findAllByIdIn(Arrays.asList(insertOrderTableA.getId(), insertOrderTableB.getId())))
+                .thenReturn(Collections.singletonList(savedOrderTable));
 
         final long savedTableGroupId = 1L;
         final TableGroup savedTableGroup = createDefaultTableGroup();
@@ -137,6 +123,12 @@ public class TableGroupBoTests {
         assertThat(tableGroup.getOrderTables())
                 .hasSize(1)
                 .contains(savedOrderTable);
+    }
+
+    private OrderTable getMockOrderTable(long insertOrderTableBId) {
+        final OrderTable mockOrderTable = Mockito.mock(OrderTable.class);
+        Mockito.when(mockOrderTable.getId()).thenReturn(insertOrderTableBId);
+        return mockOrderTable;
     }
 
 
